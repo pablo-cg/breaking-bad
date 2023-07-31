@@ -22,6 +22,7 @@ const charactersLinks: RouteLink[] = charactersRoute
 
 <template>
   <NavBar :show-icon="false" title="Personajes" :links="charactersLinks" />
-
-  <RouterView />
+  <Suspense>
+    <RouterView />
+  </Suspense>
 </template>
