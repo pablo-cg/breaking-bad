@@ -5,7 +5,7 @@ import { linkRoutes } from './router/link-routes';
 
 <template>
   <div class="wrapper">
-    <NavBar title="Breaking Bad" :links="linkRoutes" />
+    <NavBar title="Rick & Morty" :links="linkRoutes" />
     <main>
       <RouterView />
     </main>
