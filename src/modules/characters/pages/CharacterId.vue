@@ -1,49 +1,32 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import characterStore from '@/modules/stores/character.store';
-import rickMortyApi from '@/api/rickMortyApi';
-import type { Character } from '../types';
-import { useQuery } from '@tanstack/vue-query';
-import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { computed, watchEffect } from 'vue';
+import { useCharacter } from '../composables/useCharacter';
 
 const route = useRoute();
+const router = useRouter();
 
 const characterId = route.params.id as string;
 
-async function getCharacterInCache(id: string) {
-  if (characterStore.isCharacterInStore(id)) {
-    return characterStore.ids.list[id];
-  }
-
-  const { data } = await rickMortyApi.get<Character>(`character/${id}`);
-  return data;
-}
-
-const {
-  data: character,
-  isLoading,
-  isError,
-  error
-} = useQuery({
-  queryKey: ['characters', characterId],
-  queryFn: () => getCharacterInCache(characterId)
-});
-
-if (character.value) {
-  characterStore.setCharacter(character.value);
-}
+const { character, isLoading, hasError, errorMessage } = useCharacter(characterId);
 
 const characterEpisodes = computed(() => {
   const episodes = character.value?.episode.map((ep) => ep.split('/')[5]);
   return episodes?.join(', ');
 });
+
+watchEffect(() => {
+  if (!isLoading.value && hasError.value) {
+    router.replace('/characters');
+  }
+});
 </script>
 
 <template>
   <h2 v-if="isLoading">Loading...</h2>
-  <div v-else-if="isError">
+  <div v-else-if="hasError">
     <h2>Error</h2>
-    <p>{{ error }}</p>
+    <p>{{ errorMessage }}</p>
   </div>
   <main v-else>
     <h1>{{ character?.name }}</h1>

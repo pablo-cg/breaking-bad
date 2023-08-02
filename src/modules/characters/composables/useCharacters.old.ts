@@ -8,7 +8,7 @@ const characters = ref<Character[]>([]);
 const hasError = ref(false);
 const errorMessage = ref('');
 
-export const useCharacters = () => {
+const useCharacters = () => {
   async function getCharacters() {
     if (characters.value.length) return;
 
